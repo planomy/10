@@ -429,7 +429,7 @@
 
     .support-heading::before {
       content: "✦";
-      font-size: .9rem;
+      font-size: calc(.9rem * var(--tier-scale, 1));
     }
 
     .starter-list {
@@ -659,7 +659,9 @@
     body.compact .challenge p { font-size: calc(clamp(.92rem, 1.15vw, 1.18rem) * var(--tier-scale, 1)); }
     body.compact .challenge .must { font-size: calc(clamp(.8rem, .94vw, .92rem) * var(--tier-scale, 1)); }
     body.compact .support { padding: 8px 9px; margin-top: 8px; }
+    body.compact .support-heading { font-size: calc(clamp(.66rem, .74vw, .74rem) * var(--tier-scale, 1)); }
     body.compact .starter-item { font-size: calc(clamp(.72rem, .82vw, .82rem) * var(--tier-scale, 1)); }
+    body.compact .bank-label { font-size: calc(clamp(.58rem, .66vw, .66rem) * var(--tier-scale, 1)); }
     body.compact .bank-words { font-size: calc(clamp(.68rem, .75vw, .76rem) * var(--tier-scale, 1)); }
     body.compact .tier-head { padding-block: 9px 8px; }
     body.compact .mission-strip { padding-block: 7px; }
@@ -696,15 +698,16 @@
       .mission-strip { padding: 7px 11px; }
       .mission-icon { width: 40px; height: 40px; font-size: 1.4rem; }
       .challenge { padding: 11px 13px 8px; }
-      .challenge p { font-size: clamp(.9rem, 1.14vw, 1.12rem); line-height: 1.34; }
-      .challenge .must { margin-top: 9px; padding: 8px 10px; }
+      .challenge p { font-size: calc(clamp(.9rem, 1.14vw, 1.12rem) * var(--tier-scale, 1)); line-height: 1.34; }
+      .challenge .must { margin-top: 9px; padding: 8px 10px; font-size: calc(clamp(.8rem, .94vw, .92rem) * var(--tier-scale, 1)); }
       .support { margin-top: 8px; padding: 8px 9px; }
-      .support-heading { margin-bottom: 5px; }
+      .support-heading { margin-bottom: 5px; font-size: calc(clamp(.68rem, .75vw, .76rem) * var(--tier-scale, 1)); }
       .starter-list { gap: 2px; }
-      .starter-item { font-size: clamp(.7rem, .77vw, .78rem); line-height: 1.22; }
+      .starter-item { font-size: calc(clamp(.7rem, .77vw, .78rem) * var(--tier-scale, 1)); line-height: 1.22; }
       .word-banks { margin-top: 6px; gap: 5px; }
       .word-bank { padding: 5px 6px; }
-      .bank-words { font-size: clamp(.65rem, .7vw, .72rem); }
+      .bank-label { font-size: calc(clamp(.58rem, .66vw, .66rem) * var(--tier-scale, 1)); }
+      .bank-words { font-size: calc(clamp(.65rem, .7vw, .72rem) * var(--tier-scale, 1)); }
       .tier-foot { padding-block: 6px 7px; }
       .model-toggle { padding: 7px 12px; }
     }
