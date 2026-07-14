@@ -22,6 +22,7 @@
       --danger: #ff6b6b;
       --success: #75f2a7;
       --radius: 22px;
+      --tier-scale: 1;
     }
 
     * { box-sizing: border-box; }
@@ -389,7 +390,7 @@
 
     .challenge p {
       margin: 0;
-      font-size: clamp(1rem, 1.35vw, 1.38rem);
+      font-size: calc(clamp(1rem, 1.35vw, 1.38rem) * var(--tier-scale, 1));
       line-height: 1.42;
       font-weight: 680;
       letter-spacing: .005em;
@@ -401,7 +402,7 @@
       border-left: 4px solid var(--tier-colour);
       border-radius: 10px;
       background: rgba(255,255,255,.055);
-      font-size: clamp(.86rem, 1.05vw, 1rem);
+      font-size: calc(clamp(.86rem, 1.05vw, 1rem) * var(--tier-scale, 1));
       line-height: 1.35;
       color: #edf1ff;
     }
@@ -420,7 +421,7 @@
       gap: 7px;
       margin-bottom: 7px;
       color: var(--tier-colour);
-      font-size: clamp(.72rem, .82vw, .82rem);
+      font-size: calc(clamp(.72rem, .82vw, .82rem) * var(--tier-scale, 1));
       font-weight: 950;
       letter-spacing: .1em;
       text-transform: uppercase;
@@ -440,7 +441,7 @@
       position: relative;
       padding-left: 15px;
       color: #f7f9ff;
-      font-size: clamp(.79rem, .94vw, .94rem);
+      font-size: calc(clamp(.79rem, .94vw, .94rem) * var(--tier-scale, 1));
       line-height: 1.28;
       font-weight: 700;
     }
@@ -471,7 +472,7 @@
       display: block;
       margin-bottom: 4px;
       color: var(--muted);
-      font-size: clamp(.62rem, .7vw, .7rem);
+      font-size: calc(clamp(.62rem, .7vw, .7rem) * var(--tier-scale, 1));
       font-weight: 900;
       letter-spacing: .08em;
       text-transform: uppercase;
@@ -479,9 +480,41 @@
 
     .bank-words {
       color: var(--ink);
-      font-size: clamp(.74rem, .84vw, .84rem);
+      font-size: calc(clamp(.74rem, .84vw, .84rem) * var(--tier-scale, 1));
       line-height: 1.3;
       font-weight: 800;
+    }
+
+    .font-resizer {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px;
+      border-radius: 13px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+    }
+
+    .font-resizer__label {
+      min-width: 3.1rem;
+      text-align: center;
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+      color: var(--muted);
+    }
+
+    .font-resizer .control {
+      min-width: 2.35rem;
+      padding: 8px 10px;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .font-resizer .control:disabled {
+      opacity: .4;
+      cursor: default;
+      transform: none;
     }
 
     .tier-foot {
@@ -623,11 +656,11 @@
 
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-    body.compact .challenge p { font-size: clamp(.92rem, 1.15vw, 1.18rem); }
-    body.compact .challenge .must { font-size: clamp(.8rem, .94vw, .92rem); }
+    body.compact .challenge p { font-size: calc(clamp(.92rem, 1.15vw, 1.18rem) * var(--tier-scale, 1)); }
+    body.compact .challenge .must { font-size: calc(clamp(.8rem, .94vw, .92rem) * var(--tier-scale, 1)); }
     body.compact .support { padding: 8px 9px; margin-top: 8px; }
-    body.compact .starter-item { font-size: clamp(.72rem, .82vw, .82rem); }
-    body.compact .bank-words { font-size: clamp(.68rem, .75vw, .76rem); }
+    body.compact .starter-item { font-size: calc(clamp(.72rem, .82vw, .82rem) * var(--tier-scale, 1)); }
+    body.compact .bank-words { font-size: calc(clamp(.68rem, .75vw, .76rem) * var(--tier-scale, 1)); }
     body.compact .tier-head { padding-block: 9px 8px; }
     body.compact .mission-strip { padding-block: 7px; }
 
@@ -645,7 +678,7 @@
       .week-control { min-width: 240px; }
       .mission-strip { grid-template-columns: auto 1fr; }
       .focus-chips { grid-column: 1 / -1; max-width: none; justify-content: flex-start; }
-      .challenge p { font-size: clamp(.95rem, 1.45vw, 1.18rem); }
+      .challenge p { font-size: calc(clamp(.95rem, 1.45vw, 1.18rem) * var(--tier-scale, 1)); }
     }
 
     @media (max-width: 760px) {
@@ -685,6 +718,11 @@
         <div class="activity-count">Challenge <b id="activityNumber">1</b> / 8</div>
         <button class="control" id="nextBtn" title="Next activity">▶</button>
         <button class="control" id="shuffleBtn" title="Choose a random challenge">⤨ Random</button>
+        <div class="font-resizer" role="group" aria-label="Tier text size">
+          <button type="button" class="control" id="fontSmaller" title="Smaller tier text">A−</button>
+          <span class="font-resizer__label" id="fontSizeLabel">100%</span>
+          <button type="button" class="control" id="fontBigger" title="Bigger tier text">A+</button>
+        </div>
       </div>
 
       <div class="brand week-control">
@@ -7450,6 +7488,10 @@
     let timerId = null;
     let running = false;
 
+    const TIER_SCALES = [1, 1.15, 1.3, 1.5, 1.75, 2];
+    const TIER_SCALE_KEY = "writingLabTierScale";
+    let tierScaleIndex = 0;
+
     const $ = (id) => document.getElementById(id);
     const escapeHtml = (value) => String(value)
       .replaceAll("&", "&amp;")
@@ -7622,6 +7664,31 @@
       }
     }
 
+    function applyTierScale() {
+      const scale = TIER_SCALES[tierScaleIndex] || 1;
+      document.documentElement.style.setProperty("--tier-scale", String(scale));
+      $("fontSizeLabel").textContent = `${Math.round(scale * 100)}%`;
+      $("fontSmaller").disabled = tierScaleIndex <= 0;
+      $("fontBigger").disabled = tierScaleIndex >= TIER_SCALES.length - 1;
+    }
+
+    function bumpTierScale(delta) {
+      const next = Math.max(0, Math.min(TIER_SCALES.length - 1, tierScaleIndex + delta));
+      if (next === tierScaleIndex) return;
+      tierScaleIndex = next;
+      try { localStorage.setItem(TIER_SCALE_KEY, String(tierScaleIndex)); } catch (_) {}
+      applyTierScale();
+      showToast(`Tier text ${Math.round((TIER_SCALES[tierScaleIndex] || 1) * 100)}%`);
+    }
+
+    function loadTierScale() {
+      try {
+        const idx = Number(localStorage.getItem(TIER_SCALE_KEY));
+        if (Number.isInteger(idx) && idx >= 0 && idx < TIER_SCALES.length) tierScaleIndex = idx;
+      } catch (_) {}
+      applyTierScale();
+    }
+
     $("prevWeekBtn").addEventListener("click", () => changeWeek(-1));
     $("nextWeekBtn").addEventListener("click", () => changeWeek(1));
     $("weekSelect").addEventListener("change", (event) => setWeek(Number(event.target.value)));
@@ -7632,6 +7699,8 @@
     $("resetBtn").addEventListener("click", () => resetTimer(true));
     $("presentBtn").addEventListener("click", present);
     $("modelToggle").addEventListener("click", toggleModel);
+    $("fontSmaller").addEventListener("click", () => bumpTierScale(-1));
+    $("fontBigger").addEventListener("click", () => bumpTierScale(1));
     $("modelArea").addEventListener("input", saveModel);
     $("compactBtn").addEventListener("click", () => {
       document.body.classList.toggle("compact");
@@ -7673,6 +7742,8 @@
         document.body.classList.toggle("high-contrast");
         showToast("Contrast changed");
       }
+      if (event.key === "+" || event.key === "=") bumpTierScale(1);
+      if (event.key === "-" || event.key === "_") bumpTierScale(-1);
     });
 
     document.addEventListener("fullscreenchange", () => {
@@ -7681,6 +7752,7 @@
 
     populateWeekSelect();
     applyWeekTheme();
+    loadTierScale();
     loadModel();
     renderActivity();
   </script>
